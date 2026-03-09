@@ -26,7 +26,7 @@ public class ActsFromThePastInitializer
     {
         var harmony = new Harmony("actsfromthepast.actsfromthepast");
         harmony.PatchAll(typeof(ActsFromThePastInitializer).Assembly);
-        
+        // test
         ModHelper.AddModelToPool<CurseCardPool, Parasite>();
         ModHelper.AddModelToPool<CurseCardPool, Necronomicurse>();
         ModHelper.AddModelToPool<EventCardPool, Jax>();
