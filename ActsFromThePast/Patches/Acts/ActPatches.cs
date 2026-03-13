@@ -19,14 +19,12 @@ public class ActPatches
     public class LegacyActsPatch
     {
     
-        // Set to false to add legacy acts to the pool instead of replacing
-        private static readonly bool LegacyOnly = true;
-    
         public static void Postfix(ref IEnumerable<ActModel> __result, string seed, UnlockState unlockState, bool isMultiplayer)
         {
             var list = __result.ToList();
-        
-            if (LegacyOnly)
+            var config = AftpConfigManager.GetConfig();
+
+            if (config.LegacyActsOnly)
             {
                 list[0] = ModelDb.Act<ExordiumAct>();
                 list[1] = ModelDb.Act<TheCityAct>();
@@ -35,29 +33,26 @@ public class ActPatches
             else
             {
                 var rng = new Rng((uint)StringHelper.GetDeterministicHashCode(seed + "_legacy_acts"));
-                
-                // Act 1: 33% chance each for Overgrowth, Underdocks, Exordium
+
                 int act1Roll = rng.NextInt(3);
                 if (act1Roll == 0)
                 {
                     list[0] = ModelDb.Act<ExordiumAct>();
                 }
-                
-                // Act 2: 50% chance for existing Act 2, 50% for The City
+
                 int act2Roll = rng.NextInt(2);
                 if (act2Roll == 0)
                 {
                     list[1] = ModelDb.Act<TheCityAct>();
                 }
-                
-                // Act 3: 50% chance for existing Act 3, 50% for The Beyond
+
                 int act3Roll = rng.NextInt(2);
                 if (act3Roll == 0)
                 {
                     list[2] = ModelDb.Act<TheBeyondAct>();
                 }
             }
-        
+
             __result = list;
         }
     }

@@ -73,7 +73,7 @@ public sealed class TheBeyondAct : ActModel
         return AllAncients;
     }
     
-    public override IEnumerable<EventModel> AllEvents // TODO Replace these with actual Beyond events
+    public override IEnumerable<EventModel> AllEvents
     {
         get
         {

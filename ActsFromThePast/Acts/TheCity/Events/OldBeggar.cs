@@ -1,6 +1,9 @@
-﻿using MegaCrit.Sts2.Core.CardSelection;
+﻿using Godot;
+using MegaCrit.Sts2.Core.Assets;
+using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Events;
+using MegaCrit.Sts2.Core.Helpers;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
@@ -53,17 +56,20 @@ public sealed class OldBeggar : EventModel
 
     private async Task GiveGoldOption()
     {
-        // TODO: Change event image to cleric
-        // this.imageEventText.loadImage("images/events/cleric.jpg");
-
         await PlayerCmd.LoseGold(GoldCost, Owner);
-
         SetEventState(L10NLookup("OLD_BEGGAR.pages.GAVE_GOLD.description"), new EventOption[]
         {
             new EventOption(this, new Func<Task>(RemoveCardOption),
                 "OLD_BEGGAR.pages.GAVE_GOLD.options.REMOVE_CARD",
                 Array.Empty<IHoverTip>())
         });
+
+        var portrait = Node?.FindChild("Portrait", true, false) as TextureRect;
+        if (portrait != null)
+        {
+            portrait.Texture = PreloadManager.Cache.GetTexture2D(
+                ImageHelper.GetImagePath("events/cleric.png"));
+        }
     }
 
     private async Task RemoveCardOption()

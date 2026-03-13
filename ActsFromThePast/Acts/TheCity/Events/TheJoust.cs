@@ -3,6 +3,8 @@ using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.HoverTips;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Nodes;
+using MegaCrit.Sts2.Core.Nodes.Vfx.Utilities;
 
 namespace ActsFromThePast.Acts.TheCity.Events;
 
@@ -79,21 +81,29 @@ public sealed class TheJoust : EventModel
         });
     }
 
-    private Task WatchJoust()
+    private async Task WatchJoust()
     {
         _ownerWins = Rng.NextFloat() < OwnerWinChance;
-    
-        // TODO: Screen shake and sound effects if possible
-        // The original had a timed sequence with BLUNT_HEAVY and BLUNT_FAST sounds
-    
+
+        NGame.Instance?.ScreenShake(ShakeStrength.Weak, ShakeDuration.Short);
+        SfxCmd.Play("event:/sfx/enemy/enemy_attacks/cultists/cultists_attack");
+        await Cmd.Wait(1.0f);
+
+        NGame.Instance?.ScreenShake(ShakeStrength.Weak, ShakeDuration.Short);
+        SfxCmd.Play("event:/sfx/enemy/enemy_attacks/assassin_ruby_raider/assassin_ruby_raider_attack");
+        await Cmd.Wait(0.25f);
+
+        NGame.Instance?.ScreenShake(ShakeStrength.Weak, ShakeDuration.Short);
+        SfxCmd.Play("event:/sfx/enemy/enemy_attacks/cultists/cultists_attack");
+
         SetEventState(L10NLookup("THE_JOUST.pages.COMBAT.description"), new EventOption[]
         {
             new EventOption(this, new Func<Task>(ResolveJoust),
                 "THE_JOUST.pages.COMBAT.options.CONTINUE",
                 Array.Empty<IHoverTip>())
         });
-        return Task.CompletedTask;
     }
+    
     private async Task ResolveJoust()
     {
         if (_ownerWins)
