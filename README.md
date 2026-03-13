@@ -10,3 +10,14 @@
 # Acts From The Past
 
 Acts From The Past is a work-in-progress port of the Acts from Slay the Spire 1, including Exordium, The City, and The Beyond.
+
+![image 1](https://media.discordapp.net/attachments/1481936803576680558/1481936804167811092/image.png?ex=69b520b3&is=69b3cf33&hm=a55a05e6cfcb6642ca232b5376c7906cbabc7d6669c4a00ec5215629e259fd92&=&format=webp&quality=lossless)
+
+The mod *only* includes the encounters and act-specific events from Slay the Spire 1's acts, meaning Shrine events such as Wheel of Change or Lady in Blue have *not* been ported (though I may do that later if there is a demand for it)
+
+![image 2](https://media.discordapp.net/attachments/1481936803576680558/1481936872065335296/image.png?ex=69b520c3&is=69b3cf43&hm=02907ae7fca3e273ab5db2a2bee37220cf99ba50208160d88f17c9e9de8bfb12&=&format=webp&quality=lossless)
+
+Some enemies have been given visual & auditory touchups to help them feel a bit more fresh in the new game environment.
+
+![image 3](https://media.discordapp.net/attachments/1481936803576680558/1481936947201970176/image.png?ex=69b520d5&is=69b3cf55&hm=23edfc6eda9cde341ed2a9773c6f1440e02915205354540aecaba0ed7b6feaee&=&format=webp&quality=lossless)
+
