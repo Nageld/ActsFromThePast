@@ -15,6 +15,7 @@ public sealed class MalleablePower : PowerModel
 
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
+    public override bool ShouldScaleInMultiplayer => true;
 
     protected override IEnumerable<DynamicVar> CanonicalVars
     {

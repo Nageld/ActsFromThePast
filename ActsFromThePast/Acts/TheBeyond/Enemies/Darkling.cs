@@ -32,15 +32,13 @@ public sealed class Darkling : MonsterModel
     private const string NIP = "NIP";
     private const string DEAD_MOVE = "DEAD_MOVE";
     private const string REATTACH_MOVE = "REATTACH_MOVE";
-
-    private int? _nipDamage;
+    
     private bool _firstMove = true;
     private int _slotIndex;
     private MoveState _deadState;
 
-    private int NipDamage => _nipDamage ??= AscensionHelper.HasAscension(AscensionLevel.DeadlyEnemies)
-        ? GD.RandRange(9, 13)
-        : GD.RandRange(7, 11);
+    private readonly Dictionary<Creature, int> _nipDamageByCreature = new();
+    private int GetNipDamage() => _nipDamageByCreature.TryGetValue(Creature, out var d) ? d : 0;
 
     public bool FirstMove
     {
@@ -79,9 +77,9 @@ public sealed class Darkling : MonsterModel
     {
         await base.AfterAddedToRoom();
 
-        var nipMin = AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 9, 7);
-        var nipMax = AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 13, 11);
-        _nipDamage = Rng.Chaotic.NextInt(nipMax - nipMin + 1) + nipMin;
+        _nipDamageByCreature[Creature] = AscensionHelper.HasAscension(AscensionLevel.DeadlyEnemies)
+            ? RunRng.MonsterAi.NextInt(9, 14)
+            : RunRng.MonsterAi.NextInt(7, 12);
 
         int healAmount = Creature.MaxHp / 2;
         await PowerCmd.Apply<LifeLinkPower>(Creature, healAmount, Creature, null);
@@ -110,7 +108,7 @@ public sealed class Darkling : MonsterModel
         var nipState = new MoveState(
             NIP,
             Nip,
-            new SingleAttackIntent(NipDamage)
+            new DynamicSingleAttackIntent(() => GetNipDamage())
         );
 
         DeadState = new MoveState(
@@ -242,8 +240,7 @@ public sealed class Darkling : MonsterModel
     private async Task Nip(IReadOnlyList<Creature> targets)
     {
         await FastAttackAnimation.Play(Creature);
-
-        await DamageCmd.Attack(NipDamage)
+        await DamageCmd.Attack(GetNipDamage())
             .FromMonster(this)
             .WithHitFx("vfx/vfx_attack_blunt", tmpSfx: "blunt_attack.mp3")
             .Execute(null);

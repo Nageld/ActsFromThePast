@@ -12,6 +12,7 @@ public sealed class ModeShiftPower : PowerModel
 {
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
+    public override bool ShouldScaleInMultiplayer => true;
 
     public override async Task AfterDamageReceived(
         PlayerChoiceContext choiceContext,

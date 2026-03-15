@@ -51,9 +51,6 @@ public sealed class ExordiumAct : ActModel
         {
             return new EncounterModel[]
             {
-                ModelDb.Encounter<GuardianBoss>(),
-                ModelDb.Encounter<SlimeBossBoss>(),
-                ModelDb.Encounter<HexaghostBoss>()
             };
         }
     }

@@ -19,6 +19,7 @@ public sealed class TimeWarpPower : PowerModel
 
     public override PowerType Type => PowerType.Buff;
     public override PowerStackType StackType => PowerStackType.Counter;
+    public override bool ShouldScaleInMultiplayer => true;
     public override int DisplayAmount => DynamicVars[_cardCountKey].IntValue;
 
     protected override IEnumerable<DynamicVar> CanonicalVars

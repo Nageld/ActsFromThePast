@@ -19,17 +19,16 @@ public sealed class LouseRed : MonsterModel
     public override int MinInitialHp => AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 11, 10);
     public override int MaxInitialHp => AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 16, 15);
 
-    private int? _biteDamage;
-    private int BiteDamage => _biteDamage ??= AscensionHelper.HasAscension(AscensionLevel.DeadlyEnemies)
-        ? GD.RandRange(6, 8)
-        : GD.RandRange(5, 7);
-
     private int StrengthAmount => AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 4, 3);
 
-    private int CurlUpMin => AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 9, 3);
-    private int CurlUpMax => AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 12, 7);
-
     private bool _isOpen = true;
+    private readonly Dictionary<Creature, int> _biteDamageByCreature = new();
+
+    private int GetBiteDamage()
+    {
+        Log.Info($"GetBiteDamage called for Creature hash: {Creature.GetHashCode()}, damage: {(_biteDamageByCreature.TryGetValue(Creature, out var dmg) ? dmg : -1)}");
+        return _biteDamageByCreature.TryGetValue(Creature, out var d) ? d : 0;
+    }
 
     protected override string VisualsPath => "res://ActsFromThePast/monsters/louse_red/louse_red.tscn";
 
@@ -47,12 +46,13 @@ public sealed class LouseRed : MonsterModel
 
     protected override MonsterMoveStateMachine GenerateMoveStateMachine()
     {
+        Log.Info($"GenerateMoveStateMachine called on LouseRed, instance hash: {GetHashCode()}, IsMutable: {IsMutable}");
         var states = new List<MonsterState>();
 
         var biteState = new MoveState(
             "BITE",
             Bite,
-            new AbstractIntent[] { new SingleAttackIntent(BiteDamage) }
+            new AbstractIntent[] { new DynamicSingleAttackIntent(() => GetBiteDamage()) }
         );
         var growState = new MoveState(
             "GROW",
@@ -80,7 +80,16 @@ public sealed class LouseRed : MonsterModel
     public override async Task AfterAddedToRoom()
     {
         await base.AfterAddedToRoom();
-        var curlUpAmount = GD.RandRange(CurlUpMin, CurlUpMax);
+
+        var dmg = AscensionHelper.HasAscension(AscensionLevel.DeadlyEnemies)
+            ? RunRng.MonsterAi.NextInt(6, 9)
+            : RunRng.MonsterAi.NextInt(5, 8);
+        _biteDamageByCreature[Creature] = dmg;
+
+        var curlUpAmount = AscensionHelper.HasAscension(AscensionLevel.ToughEnemies)
+            ? RunRng.MonsterAi.NextInt(9, 13)
+            : RunRng.MonsterAi.NextInt(3, 8);
+
         await PowerCmd.Apply<CurlUpPower>(Creature, curlUpAmount, Creature, null);
     }
 
@@ -94,7 +103,7 @@ public sealed class LouseRed : MonsterModel
             _isOpen = true;
         }
         await FastAttackAnimation.Play(Creature);
-        await DamageCmd.Attack(BiteDamage)
+        await DamageCmd.Attack(GetBiteDamage())
             .FromMonster(this)
             .WithAttackerFx(sfx: "event:/sfx/enemy/enemy_attacks/giant_louse/giant_louse_attack")
             .WithHitFx("vfx/vfx_attack_blunt")
