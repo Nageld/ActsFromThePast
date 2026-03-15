@@ -26,7 +26,6 @@ public sealed class LouseRed : MonsterModel
 
     private int GetBiteDamage()
     {
-        Log.Info($"GetBiteDamage called for Creature hash: {Creature.GetHashCode()}, damage: {(_biteDamageByCreature.TryGetValue(Creature, out var dmg) ? dmg : -1)}");
         return _biteDamageByCreature.TryGetValue(Creature, out var d) ? d : 0;
     }
 
@@ -46,7 +45,6 @@ public sealed class LouseRed : MonsterModel
 
     protected override MonsterMoveStateMachine GenerateMoveStateMachine()
     {
-        Log.Info($"GenerateMoveStateMachine called on LouseRed, instance hash: {GetHashCode()}, IsMutable: {IsMutable}");
         var states = new List<MonsterState>();
 
         var biteState = new MoveState(
